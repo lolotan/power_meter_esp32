@@ -122,6 +122,8 @@ void loop() {
 
   static int oldInjectionValue = 0;
   static int oldConsumptionValue = 0;
+  static bool isAnimated = false;
+  static int animationSteps = 10;
 
   if (!client.connected()) {
     reconnect();
@@ -137,21 +139,25 @@ void loop() {
       value_to_display = consumptionValue;
       old_value = oldConsumptionValue;
     }
-
-    int step = (value_to_display - old_value) / 20;
-    
-    for (int i = 0 ; i < 20 ; i++) {
-      displayMeter(old_value, consumptionValue != 0);
-      old_value += step;
-      delay(100);
+    if (isAnimated) {
+      int step = (value_to_display - old_value) / animationSteps;
+      
+      for (int i = 0 ; i < animationSteps ; i++) {
+        displayMeter(old_value, consumptionValue != 0);
+        old_value += step;
+        delay(300);
+      }
     }
     displayMeter(value_to_display, consumptionValue != 0);
-    
 
     oldInjectionValue = injectionValue;
     oldConsumptionValue = consumptionValue;
   }
-  delay(100);
+  if (isAnimated) {
+    delay(300);
+  } else {
+    delay(3000);
+  }
 }
 
 void displayMeter(int value, bool grid_to_house)
